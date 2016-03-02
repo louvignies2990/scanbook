@@ -1,3 +1,4 @@
+a: pour insérer dans vim
 ':w' pour sauvegarder le fichier
 ':q' pour quitter Vim
 ':x' permet de sauvegarder et quitter Vim.
