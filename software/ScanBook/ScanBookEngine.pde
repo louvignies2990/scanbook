@@ -13,8 +13,13 @@ void initBookScan(String path) {
   outputPath = "output/";
   
   opencv = new OpenCV(this,picture);
+  opencv.useGray();
+  
+  previewOCV = new OpenCV(this,pictureSmall);
+  previewOCV.useGray();
   
   ppi = 96;
+  threshold=40;
   
   f = createFont("Georgia", 11);
   textFont(f);
@@ -29,13 +34,15 @@ void initBookScan(String path) {
 
 void loadPicture(String path) {
   picture = loadImage(path);
+  pictureSmall = loadImage(path);
+  pictureSmall.resize(400,300);
   minArea = (picture.width*picture.height)/4;
 }
 
 int autoDetect() {
   opencv.loadImage(picture);
-  opencv.blur(1);
-  opencv.threshold(20);
+  //opencv.blur(5);
+  opencv.threshold(threshold);
   
   ArrayList<Contour> contours = opencv.findContours(false, true);
   Contour cont = null;
@@ -43,7 +50,7 @@ int autoDetect() {
   for(int i=0;i<contours.size();i++) {
     cont = contours.get(i).getPolygonApproximation();
     //drawContour(cont,"c",true);
-    //println("Contour "+(i+1)+" : "+cont.getPoints().size()+" points , size : "+cont.area());
+    println("Contour "+(i+1)+" : "+cont.getPoints().size()+" points , size : "+cont.area());
     if(cont.getPoints().size()==6 && cont.area()>=minArea) {
       //println("a contour has been selected");
       contour = cont;
