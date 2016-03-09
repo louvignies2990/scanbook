@@ -10,7 +10,18 @@ void initBookScan(String path) {
   loadPicture(path);
   outputPath = "output/";
   opencv = new OpenCV(this,picture);
+<<<<<<< HEAD
   ppi = 96;
+=======
+  opencv.useGray();
+  
+  previewOCV = new OpenCV(this,pictureSmall);
+  previewOCV.useGray();
+  
+  ppi = 96;
+  threshold=40;
+  
+>>>>>>> ee07bd95062f502a232245e4e8ed88c492c8a0d2
   f = createFont("Georgia", 11);
   textFont(f);
   pages = new ArrayList<PImage>();
@@ -20,12 +31,24 @@ void initBookScan(String path) {
 }
 void loadPicture(String path) {
   picture = loadImage(path);
+<<<<<<< HEAD
   minArea = (picture.width*picture.height)/5;
+=======
+  pictureSmall = loadImage(path);
+  pictureSmall.resize(400,300);
+  minArea = (picture.width*picture.height)/4;
+>>>>>>> ee07bd95062f502a232245e4e8ed88c492c8a0d2
 }
 int autoDetect() {
   opencv.loadImage(picture);
+<<<<<<< HEAD
   opencv.blur(1);
   opencv.threshold(25); 
+=======
+  //opencv.blur(5);
+  opencv.threshold(threshold);
+  
+>>>>>>> ee07bd95062f502a232245e4e8ed88c492c8a0d2
   ArrayList<Contour> contours = opencv.findContours(false, true);
   Contour cont = null;
   PVector tab[];
@@ -33,10 +56,17 @@ int autoDetect() {
   println(contours.size() + " contours found in the picture");
   for(int i=0;i<contours.size();i++) {
     cont = contours.get(i).getPolygonApproximation();
+<<<<<<< HEAD
     //drawContour(cont);
     println("Contour "+(i+1)+" : "+cont.getPoints()+" points");
     if(cont.area()>=minArea&&cont.getPoints().size()>3) { 
       println("contour has been selected");
+=======
+    //drawContour(cont,"c",true);
+    println("Contour "+(i+1)+" : "+cont.getPoints().size()+" points , size : "+cont.area());
+    if(cont.getPoints().size()==6 && cont.area()>=minArea) {
+      //println("a contour has been selected");
+>>>>>>> ee07bd95062f502a232245e4e8ed88c492c8a0d2
       contour = cont;
       println(cont.getPoints());
       //println("Contour "+(i+1)+" : "+contour.getPoints().size()+" points , size : "+contour.area());
