@@ -1,15 +1,11 @@
-
 void setup() {
-  initBookScan("input/IMG_1801_bis.JPG");
-  loadPicture("input/IMG_1801_bis.JPG");
+  initBookScan("input/test4.JPG");
+  loadPicture("input/test4.JPG");
   autoDetect();
   getPages();
-  savePages();
-  
+  //savePages(); 
   drawWindow();
 }
-
 void draw() {
   println("FPS: "+frameRate);
 }
-
