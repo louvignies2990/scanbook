@@ -21,7 +21,7 @@ void drawContour(){
   raw.strokeWeight(16);
   raw.stroke(0, 255, 0); 
   raw.textFont(createFont("Georgia", 150));
-  contour.draw();
+  //contour.draw();
   fill(200,200,200);
   int n;
   n=points.size()-1;

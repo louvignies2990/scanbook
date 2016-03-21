@@ -7,5 +7,5 @@ void setup() {
   drawWindow();
 }
 void draw() {
-  println("FPS: "+frameRate);
+  //println("FPS: "+frameRate);
 }

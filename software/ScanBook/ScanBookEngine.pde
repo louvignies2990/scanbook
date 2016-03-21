@@ -6,6 +6,7 @@ import org.opencv.core.Size;
 import org.opencv.core.Mat;
 import org.opencv.core.CvType;
 import java.util.*;
+import java.util.Comparator;
 void initBookScan(String path) {
   loadPicture(path);
   outputPath = "output/";
@@ -25,7 +26,7 @@ void loadPicture(String path) {
 int autoDetect() {
   opencv.loadImage(picture);
   opencv.blur(1);
-  opencv.threshold(25); 
+  opencv.threshold(50); 
   ArrayList<Contour> contours = opencv.findContours(false, true);
   Contour cont = null;
   PVector tab[];
@@ -34,7 +35,7 @@ int autoDetect() {
   for(int i=0;i<contours.size();i++) {
     cont = contours.get(i).getPolygonApproximation();
     //drawContour(cont);
-    println("Contour "+(i+1)+" : "+cont.getPoints()+" points");
+    //println("Contour "+(i+1)+" : "+cont.getPoints()+" points");
     if(cont.area()>=minArea&&cont.getPoints().size()>3) { 
       println("contour has been selected");
       contour = cont;
@@ -53,34 +54,18 @@ int autoDetect() {
 int getPages() { 
   int pageWidth = (int)(ppi*8.267);  // in inches
   int pageHeight = (int)(ppi*11.692);
+  println(pageWidth);
+  println(pageHeight);
   pages.set(0,createImage(pageWidth, pageHeight, ARGB));
   pages.set(1,createImage(pageWidth, pageHeight, ARGB));
-  ArrayList<PVector> points1 = new ArrayList<PVector>();
-  Collections.sort(points1,new comp());
-  for(int i=0;i<(points1.size()-1);i++) {
-  println(i, contour.getPoints().get(i).x, contour.getPoints().get(i).y);}
-//  if (contour.getPoints().size()==4){
-//  points1.add(contour.getPoints().get(0));
-//  points1.add(contour.getPoints().get(1));
-//  points1.add(contour.getPoints().get(2));
-//  points1.add(contour.getPoints().get(3));
-//opencv.toPImage(warpPerspective(points1, pageWidth, pageHeight), pages.get(0)); }
-//  if(contour.getPoints().size()==6)
-//  {
-//    points1.add(contour.getPoints().get(1));
-//  points1.add(contour.getPoints().get(4));
-//  points1.add(contour.getPoints().get(5));
-//  points1.add(contour.getPoints().get(0));
-//  opencv.toPImage(warpPerspective(points1, pageWidth, pageHeight), pages.get(0)); 
-//}
-//if(contour.getPoints().size()==7)
-//  {
-//    points1.add(contour.getPoints().get(2));
-//  points1.add(contour.getPoints().get(5));
-//  points1.add(contour.getPoints().get(6));
-//  points1.add(contour.getPoints().get(0));
-//  opencv.toPImage(warpPerspective(points1, pageWidth, pageHeight), pages.get(0)); 
-//}
+  ArrayList<PVector>points1=new ArrayList<PVector>();
+  ArrayList<PVector>points2=new ArrayList<PVector>();
+  points1=tri();
+    points2.add(points1.get(3));//coin supérieur gauche
+    points2.add(points1.get(4));//coin inférieur gauche
+    points2.add(points1.get(5));//coin inférieur droit
+    points2.add(points1.get(2));//coin supérieur droit
+    opencv.toPImage(warpPerspective(points2, pageWidth, pageHeight), pages.get(0)); 
   return 0;
 }
 void savePages() {
@@ -110,18 +95,40 @@ private Mat warpPerspective(ArrayList<PVector> inputPoints, int w, int h) {
   Imgproc.warpPerspective(opencv.getColor(), unWarpedMarker, transform, new Size(w, h));
   return unWarpedMarker;
 }
-public class comp
-        implements Comparator<PVector> {
-
-        public int compare(final Point a, final Point b) {
-            if (a.x < b.x) {
-                return -1;
-            }
-            else if (a.x > b.x) {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
+ArrayList tri()
+{
+  ArrayList<PVector> points = contour.getPoints();
+  ArrayList<PVector>temp=new ArrayList<PVector>();
+  for(int r=0;r<points.size();r++){
+  temp.add(new PVector (0,0,0));
+  }
+  PVector prem= new PVector(0,0,0);
+  boolean listordo=false;
+  int taille=points.size();
+  while(!listordo)
+  {
+    listordo=true;
+  for(int i=0;i<(points.size()-1);i++) {
+    if(points.get(i).x>prem.x)
+    {
+      prem.set(points.get(i));
+      listordo=false;
     }
+  }
+  taille--;
+  }
+  for(int i=0;i<(points.size()-1);i++) {
+   if(points.get(i).x==prem.x){ 
+     for(int a=0;a<i;a++){
+       temp.set(a,points.get(a));
+     }
+     for(int z=i;z<points.size();z++){
+       points.set(z-i,points.get(z));
+     }
+     for(int e=(points.size())-i;e<points.size();e++){
+       points.set(e,temp.get(e-points.size()+i));
+     }
+   }
+  }
+  return points;
+}
